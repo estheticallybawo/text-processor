@@ -132,7 +132,7 @@ export default function TranslatorPage() {
     
             </div>
           </div>
-          <div className={styles.footer}> built by <Link href="www.github.com/estheticallybawo">Esther Bawo Tsotso </Link> for <Link href="www.hng.tech">HNG Tech Internship</Link></div>
+          <div className={styles.footer}> built by <a href="www.github.com/estheticallybawo">Esther Bawo Tsotso </a> for <a href="www.hng.tech">HNG Tech Internship</a></div>
         </div>
       </main>
       
