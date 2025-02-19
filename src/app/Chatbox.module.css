@@ -102,9 +102,9 @@
   
   .languageSelect {
     width: 180px;
-    background-color: #1a1f2e;
+    background-color: rgb(34, 34, 59, 0.5);
     border-color: #1f2937;
-    opacity: 0.8;
+    
   }
   
   .inputGroup {
