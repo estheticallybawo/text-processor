@@ -64,7 +64,10 @@ export default function TranslatorPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
+        <div>
         <h1 className={styles.title}>AI-Powered Text Processor</h1>
+        <p className={styles.caveat}>Instant Summarization, Translation and Language detection </p>
+        </div>
         <Button  onClick={() => handleClearChat()} className={styles.clearButton}> Clear Chat </Button>
       </header>
 

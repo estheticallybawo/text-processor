@@ -11,6 +11,10 @@
     padding: 1rem;
     border-bottom: 1px solid #1f2937;
   }
+  .caveat {
+    display: flex;
+    align-items: center;
+  }
   .clearButton {
     background: #CB2C2A;
   }
@@ -20,6 +24,7 @@
     font-weight: 600;
   }
   
+
   .themeButton {
     color: white;
   }
@@ -109,13 +114,13 @@
   
   .input {
     flex: 1;
-    background-color: #1a1f2e;
-    border-color: #1f2937;
+    background-color: rgb(73, 113, 158, 0.3);
+    border-color: #006DAA;
     color: white;
   }
   
   .input::placeholder {
-    color: #6b7280;
+    color: #CFD2B2;
   }
   
   .sendButton {
