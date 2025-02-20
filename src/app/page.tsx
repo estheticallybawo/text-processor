@@ -114,7 +114,7 @@ export default function TranslatorPage() {
               )}
               </p>
               {message.summary && (
-                <div className={styles.summary}>
+                <div className={styles.translation}>
                   <p className={styles.summaryLabel}>Summary:</p>
                   <p>{message.summary}</p>
                 </div>
