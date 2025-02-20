@@ -42,7 +42,7 @@ export default function TranslatorPage() {
     };
 
     initialize();
-  }, [initializeDetector]);
+  }, []);
 
 
 
