@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send } from "lucide-react";
 import Link from "next/link";
+import { useSummarizer } from "@/context/SummerizerContext";
+import Image from "next/image";
+
 
 interface Message {
   text: string
@@ -19,6 +22,9 @@ export default function TranslatorPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
   const [targetLanguage, setTargetLanguage] = useState("en")
+  const { summarizeText } = useSummarizer() as {
+    summarizeText: (text: string) => Promise<string>;
+  };
 
   const handleSend = async () => {
     if (!inputValue.trim()) return
@@ -47,26 +53,44 @@ export default function TranslatorPage() {
   }
 
   const handleSummarize = async (index: number) => {
-    const message = messages[index]
-    if (message.detectedLanguage !== "English" || message.text.length <= 150) return
-
-    const summaryText = await summarizeText(message.text)
-    
-    const updatedMessages = [...messages]
-    updatedMessages[index].summary = summaryText
-    setMessages(updatedMessages)
-  }
+    const message = messages[index];
+    if (message.detectedLanguage !== "English" || message.text.length <= 150) return;
+  
+    try {
+      const summary = await summarizeText(message.text);
+  
+      // Update messages state
+      const updatedMessages = [...messages];
+      updatedMessages[index].summary = summary;
+      setMessages(updatedMessages);
+      console.log('Messages updated:', updatedMessages);
+    } catch (error) {
+      console.error('Summarization failed:', error);
+      const updatedMessages = [...messages];
+      updatedMessages[index].summary = 'Summary unavailable';
+      setMessages(updatedMessages);
+    }
+  };
 
   const handleClearChat = () => {
     setMessages([]);
   }
+  
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div>
+        <div className={styles.logo}>
+         <Image 
+          className={styles.icon} 
+          src="/robot.png"
+          alt="chatbot-icon"
+          width={65}
+          height={65}/>
+          <span>
         <h1 className={styles.title}>AI-Powered Text Processor</h1>
         <p className={styles.caveat}>Instant Summarization, Translation and Language detection </p>
+        </span>
         </div>
         <Button  onClick={() => handleClearChat()} className={styles.clearButton}> Clear Chat </Button>
       </header>
@@ -79,11 +103,16 @@ export default function TranslatorPage() {
                 <p>{message.text}</p>
                 <p className={styles.detectedLanguage}>Detected language: {message.detectedLanguage}</p>
               </div>
+              <p>
               {message.text.length > 150 && message.detectedLanguage === "English" && (
-                <Button variant="secondary" size="sm" className={styles.summarizeButton} onClick={() => handleSummarize(index)}>
+                <Button variant="secondary" size="sm" className={styles.summarizeButton} onClick={() =>
+                 { console.log('Summarize button clicked');
+                handleSummarize(index)}}>
                   Summarize
                 </Button>
+              
               )}
+              </p>
               {message.summary && (
                 <div className={styles.summary}>
                   <p className={styles.summaryLabel}>Summary:</p>
@@ -149,8 +178,5 @@ async function translateText(text: string, targetLang: string): Promise<string> 
   return `Translated to ${targetLang}: ${text}` // Mock translation (Replace with real API call)
 }
 
-async function summarizeText(text: string): Promise<string> {
-  return `Summary: ${text.substring(0, 100)}...` // Mock summary (Replace with real API call)
-}
 
 
