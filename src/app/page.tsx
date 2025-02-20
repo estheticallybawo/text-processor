@@ -9,6 +9,7 @@ import { Send } from "lucide-react";
 import Link from "next/link";
 import { useSummarizer } from "@/context/SummerizerContext";
 import Image from "next/image";
+import { ClipLoader } from "react-spinners";
 
 
 interface Message {
@@ -111,6 +112,7 @@ export default function TranslatorPage() {
       <main className={styles.main}>
       {status === 'summarizing' && (
         <div className={styles.statusMessage}>
+          <ClipLoader size={20} color="#856404" />
           <p>Summarizing... Please wait.</p>
         </div>
       )}
