@@ -68,6 +68,7 @@
     margin: 1rem 0;
     border-radius: 4px;
     text-align: center;
+    
   }
   
   .statusMessage[data-status="summarizing"] {
@@ -75,9 +76,11 @@
     color: #856404;
   }
   
-  .statusMessage[data-status="error"] {
-    background: #f8d7da;
-    color: #721c24;
+  .statusError {
+    color: #CB2C2A;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    text-align: center;
   }
 
 .icon {

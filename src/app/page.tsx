@@ -28,7 +28,7 @@ export default function TranslatorPage() {
   const { summarizeText } = useSummarizer() as {
     summarizeText: (text: string) => Promise<string>;
   };
-  const [status, setStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'null' | 'summarizing' | 'success' | 'error'>('idle');
 
   const handleSend = async () => {
     if (!inputValue.trim()) return
@@ -88,6 +88,7 @@ export default function TranslatorPage() {
 
   const handleClearChat = () => {
     setMessages([]);
+    setStatus('null');
   }
   
 
@@ -112,12 +113,12 @@ export default function TranslatorPage() {
       <main className={styles.main}>
       {status === 'summarizing' && (
         <div className={styles.statusMessage}>
-          <ClipLoader size={20} color="#856404" />
+          <ClipLoader size={20} />
           <p>Summarizing... Please wait.</p>
         </div>
       )}
       {status === 'error' && (
-        <div className={styles.statusMessage}>
+        <div className={styles.statusError}>
           <p>Summarization failed. Please try again.</p>
         </div>
       )}
