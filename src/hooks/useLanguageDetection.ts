@@ -44,9 +44,8 @@ export function useLanguageDetection() {
 
       let detectorInstance;
       if (canDetect === "readily") {
-        // The language detector can immediately be used
-        detectorInstance = await window.ai.languageDetector.create();
-      } else {
+        
+        
         // The language detector requires a model download
         const monitorCallback = (m: any) => {
           const progressHandler = (e: any) => {
