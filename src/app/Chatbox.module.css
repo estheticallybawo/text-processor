@@ -63,6 +63,23 @@
     display: flex;
     flex-direction: row;
   }
+  .statusMessage {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .statusMessage[data-status="summarizing"] {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .statusMessage[data-status="error"] {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
 .icon {
   height: 50px;
   width: 50px;

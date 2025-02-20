@@ -19,12 +19,15 @@ interface Message {
 }
 
 export default function TranslatorPage() {
+
+
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
   const [targetLanguage, setTargetLanguage] = useState("en")
   const { summarizeText } = useSummarizer() as {
     summarizeText: (text: string) => Promise<string>;
   };
+  const [status, setStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
 
   const handleSend = async () => {
     if (!inputValue.trim()) return
@@ -57,15 +60,25 @@ export default function TranslatorPage() {
     if (message.detectedLanguage !== "English" || message.text.length <= 150) return;
   
     try {
+      // Set status to 'summarizing'
+      setStatus('summarizing');
+  
       const summary = await summarizeText(message.text);
   
       // Update messages state
       const updatedMessages = [...messages];
       updatedMessages[index].summary = summary;
       setMessages(updatedMessages);
-      console.log('Messages updated:', updatedMessages);
+  
+      // Set status to 'success'
+      setStatus('success');
+      console.log('Summarization successful');
     } catch (error) {
       console.error('Summarization failed:', error);
+  
+      // Set status to 'error'
+      setStatus('error');
+  
       const updatedMessages = [...messages];
       updatedMessages[index].summary = 'Summary unavailable';
       setMessages(updatedMessages);
@@ -96,6 +109,16 @@ export default function TranslatorPage() {
       </header>
 
       <main className={styles.main}>
+      {status === 'summarizing' && (
+        <div className={styles.statusMessage}>
+          <p>Summarizing... Please wait.</p>
+        </div>
+      )}
+      {status === 'error' && (
+        <div className={styles.statusMessage}>
+          <p>Summarization failed. Please try again.</p>
+        </div>
+      )}
         <div className={styles.messageList}>
           {messages.map((message, index) => (
             <div key={index} className={styles.messageContainer}>
