@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, } from "react";
 import styles from "./Chatbox.module.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Send } from "lucide-react";
 import Link from "next/link";
 import { useSummarizer } from "@/context/SummerizerContext";
-import { useLanguageDetection } from "@/hooks/useLanguageDetection";
 import Image from "next/image";
 import { languageMap } from "@/utils/languageMap"; 
 import { formatConfidence } from "@/utils/formatConfidence"; 
+import { useLanguageDetection } from "@/context/LanguageDetectionContext";
 
 interface Message {
   text: string;
@@ -25,7 +25,7 @@ export default function TranslatorPage() {
 
 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
-  const { detectedLanguage, status, detectLanguage, initializeDetector } = useLanguageDetection();
+  const { status, detectLanguage } = useLanguageDetection(); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("en");
@@ -34,61 +34,37 @@ export default function TranslatorPage() {
   };
   const [summarizationStatus, setSummarizationStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
 
-  useEffect(() => {
-    let isMounted = true; 
-  
-    const initialize = async () => {
-      try {
-        await initializeDetector();
-        if (isMounted) {
-          setIsDetectorInitialized(true);
-        }
-      } catch (error) {
-        if (isMounted) {
-          console.error("Failed to initialize language detector:", error);
-        }
-      }
-    };
-  
-    initialize();
-  
-    return () => {
-      isMounted = false; // Cleanup when the component unmounts
-    };
-  }, [initializeDetector]);
-
-
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
-  
-    // Check if the detector is initialized
-    if (!isDetectorInitialized) {
-      console.error("Language detector is not initialized.");
+
+    // Check if the detector is ready
+    if (status !== "ready") {
+      console.error("Language detector is not ready.");
       return;
     }
-  
+
     const newMessage: Message = {
       text: inputValue,
       detectedLanguage: "Detecting...",
     };
-  
+
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
-  
+
     // Detect Language
     const detectedLanguages = await detectLanguage(inputValue);
-  
+
     if (detectedLanguages.length > 0) {
       const mostLikelyLanguage = detectedLanguages[0].detectedLanguage;
       const confidence = detectedLanguages[0].confidence;
-  
+
       newMessage.detectedLanguage = mostLikelyLanguage;
       newMessage.confidence = confidence; // Add confidence to the message
     } else {
       newMessage.detectedLanguage = "Unknown";
     }
-  
+
     setMessages((prev) => [...prev.slice(0, -1), newMessage]);
   };
 
@@ -175,8 +151,8 @@ export default function TranslatorPage() {
             <div key={index} className={styles.messageContainer}>
               <div className={styles.message}>
                 <p>{message.text}</p>
-                 <p className={styles.detectedLanguage}>{message.confidence !== undefined
-            ? `I'm ${formatConfidence(message.confidence)} 
+                 <p className={styles.detectedLanguage}> {message.confidence !== undefined
+            ? `I'm ${formatConfidence(message.confidence)}
             sure this is ${languageMap[message.detectedLanguage] || message.detectedLanguage}`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
@@ -194,7 +170,7 @@ export default function TranslatorPage() {
               </p>
               {message.summary && (
                 <div className={styles.translation}>
-                  <p className={styles.summaryLabel}>Summary:</p>
+                  <p className={styles.summaryLabel}> Summary: </p>
                   <p>{message.summary}</p>
                 </div>
               )}
