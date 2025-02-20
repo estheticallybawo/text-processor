@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Chatbox.module.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,9 @@ interface Message {
 }
 
 export default function TranslatorPage() {
+
+
+  const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
   const { detectedLanguage, status, detectLanguage, initializeDetector } = useLanguageDetection();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -27,6 +30,21 @@ export default function TranslatorPage() {
     summarizeText: (text: string) => Promise<string>;
   };
   const [summarizationStatus, setSummarizationStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        await initializeDetector();
+        setIsDetectorInitialized(true); // Set initialized to true
+      } catch (error) {
+        console.error("Failed to initialize language detector:", error);
+      }
+    };
+
+    initialize();
+  }, [initializeDetector]);
+
+
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
@@ -107,6 +125,12 @@ export default function TranslatorPage() {
       </header>
 
       <main className={styles.main}>
+      {!isDetectorInitialized && (
+          <div className={styles.statusMessage}>
+            <p>Initializing language detector... Please wait.</p>
+          </div>
+        )}
+
         {summarizationStatus === 'summarizing' && (
           <div className={styles.statusMessage}>
             <p>Summarizing... Please wait.</p>
@@ -182,6 +206,8 @@ export default function TranslatorPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                disabled={!isDetectorInitialized && !summarizeText}
+                
               />
               <Button onClick={handleSend} className={styles.sendButton}>
                 <Send className={styles.sendIcon} />
