@@ -1,20 +1,20 @@
 .container {
     min-height: 100vh;
     color: white;
-    overflow: hidden;
   }
   
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    border-bottom: 1px solid #1f2937;
+          display: flex;
+          align-items: center;
+        justify-content: space-between;
+        padding: 5px 20px;
+        color: white;
+        border-bottom: 4px solid rgba(255, 255, 255, 0.2);
   }
   .caveat {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 2px;
   }
   .clearButton {
     background: #CB2C2A;
@@ -63,7 +63,10 @@
     display: flex;
     flex-direction: row;
   }
-
+.icon {
+  height: 50px;
+  width: 50px;
+}
   .detectedLanguage {
     font-size: 0.875rem;
     color: #1F2421;

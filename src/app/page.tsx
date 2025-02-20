@@ -87,10 +87,10 @@ export default function TranslatorPage() {
           alt="chatbot-icon"
           width={65}
           height={65}/>
-          <span>
+          <div>
         <h1 className={styles.title}>AI-Powered Text Processor</h1>
         <p className={styles.caveat}>Instant Summarization, Translation and Language detection </p>
-        </span>
+        </div>
         </div>
         <Button  onClick={() => handleClearChat()} className={styles.clearButton}> Clear Chat </Button>
       </header>
