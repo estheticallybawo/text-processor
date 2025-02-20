@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface SummarizerContextType {
-  status: 'loading' | 'ready' | 'unavailable' | 'downloading';
+  status: 'loading' | 'ready' | 'unavailable' | 'downloading' | 'idle' | 'summarizing' | 'success' | 'error';
   summarizer: any;
   summarizeText: (text: string) => Promise<string>;
   downloadProgress: number;
@@ -18,7 +18,7 @@ const SummarizerContext = createContext<SummarizerContextType>({
 
 export function SummarizerProvider({ children }: { children: ReactNode }) {
   const [summarizer, setSummarizer] = useState<any>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable' | 'downloading'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable' | 'downloading' | 'idle' | 'summarizing' | 'success' | 'error'>('idle');
   const [downloadProgress, setDownloadProgress] = useState(0);
 
   useEffect(() => {
@@ -43,6 +43,8 @@ export function SummarizerProvider({ children }: { children: ReactNode }) {
           length: 'medium',
         });
 
+    
+
         // Handle model download
         if (capabilities.available === 'after-download') {
             setStatus('downloading');
@@ -65,10 +67,23 @@ export function SummarizerProvider({ children }: { children: ReactNode }) {
       initializeSummarizer();
     }, []);
 
+    useEffect(() => {
+      if (status === 'success' || status === 'error') {
+        const timer = setTimeout(() => {
+          setStatus('idle');
+        }, 3000); // Reset after 3 seconds
+    
+        return () => clearTimeout(timer);
+      }
+    }, [status]);
+
+
   const summarizeText = async (text: string) => {
     if (!summarizer || status !== 'ready') throw new Error('Summarizer not ready');
     return await summarizer.summarize(text);
   };
+  
+
 
   return (
     <SummarizerContext.Provider value={{ status, summarizer, summarizeText, downloadProgress }}>
