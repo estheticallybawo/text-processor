@@ -67,33 +67,30 @@ export function useLanguageDetection() {
       }
     };
 
-  const detectLanguage = async (text: string): Promise<string> => {
-    if (!text.trim()) return "";
-
-    setStatus("detecting");
-
-    try {
-      if (!detector) {
-        throw new Error("Language detector is not initialized.");
-      }
-
-      const detectedLanguages = await detector.detectLanguage(text);
-      if (detectedLanguages.length > 0) {
-        setDetectedLanguage(detectedLanguages[0].language);
-        setStatus("success");
-        return detectedLanguages[0].language;
-      } else {
-        setDetectedLanguage("Unknown");
+    const detectLanguage = async (text: string): Promise<{ detectedLanguage: string; confidence: number }[]> => {
+      if (!text.trim()) return [];
+    
+      setStatus("detecting");
+    
+      try {
+        if (!detector) {
+          throw new Error("Language detector is not initialized.");
+        }
+    
+        const detectedLanguages = await detector.detectLanguage(text);
+        if (detectedLanguages.length > 0) {
+          setStatus("success");
+          return detectedLanguages; 
+        } else {
+          setStatus("error");
+          return []; 
+        }
+      } catch (error) {
+        console.error("Language detection failed:", error);
         setStatus("error");
-        return "Unknown";
+        return []; 
       }
-    } catch (error) {
-      console.error("Language detection failed:", error);
-      setDetectedLanguage("Unknown");
-      setStatus("error");
-      return "Unknown";
-    }
-  };
+    };
 
   return { detectedLanguage, status, detectLanguage, initializeDetector };
 }

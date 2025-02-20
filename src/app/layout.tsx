@@ -23,7 +23,7 @@ export default function RootLayout({
       <head>
       <meta 
          name="chromemeta" 
-        content={process.env.NEXT_PUBLIC_CHROME_API_TOKEN}
+        content={process.env.NEXT_PUBLIC_SUMMARIZER_API_TOKEN}
          data-origin="http://localhost:3000"
       />
       </head>
