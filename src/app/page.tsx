@@ -32,17 +32,27 @@ export default function TranslatorPage() {
   const [summarizationStatus, setSummarizationStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
 
   useEffect(() => {
+    let isMounted = true; 
+  
     const initialize = async () => {
       try {
         await initializeDetector();
-        setIsDetectorInitialized(true); // Set initialized to true
+        if (isMounted) {
+          setIsDetectorInitialized(true);
+        }
       } catch (error) {
-        console.error("Failed to initialize language detector:", error);
+        if (isMounted) {
+          console.error("Failed to initialize language detector:", error);
+        }
       }
     };
-
+  
     initialize();
-  }, []);
+  
+    return () => {
+      isMounted = false; // Cleanup when the component unmounts
+    };
+  }, [initializeDetector]);
 
 
 
