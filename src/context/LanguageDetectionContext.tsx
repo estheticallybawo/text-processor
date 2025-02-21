@@ -3,21 +3,21 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 interface LanguageDetectionContextType {
   status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
   detector: any;
-  detectLanguage: (text: string) => Promise<{ detectedLanguage: string;  confidence: number}[]>;
-  translateText: (text: string, targetLanguage: string) => Promise<string>; // Add translation function
+  detectLanguage: (text: string) => Promise<{ detectedLanguage: string; confidence: number }[]>;
   downloadProgress: number;
   confidence: number;
   formatConfidence: (confidence: number) => string;
+  translateText: (text: string, targetLanguage: string) => Promise<string>;
 }
 
 const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
   status: "loading",
   detector: null,
   detectLanguage: async () => [],
-  translateText: async () => "", 
   downloadProgress: 0,
   confidence: 0,
   formatConfidence: (confidence: number) => "",
+  translateText: async () => "",
 });
 
 export function LanguageDetectionProvider({ children }: { children: ReactNode }) {
