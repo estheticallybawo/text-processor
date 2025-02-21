@@ -23,7 +23,7 @@ interface Message {
 
 export default function TranslatorPage() {
 
-
+ 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
   const { status, detectLanguage } = useLanguageDetection(); 
   const [messages, setMessages] = useState<Message[]>([]);
