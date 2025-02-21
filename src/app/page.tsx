@@ -48,7 +48,7 @@ export default function ChatPage() {
     setInputValue("");
 
     // Detect Language
-    const detectedLanguages = await detectLanguage(inputValue);
+    const detectedLanguages: { detectedLanguage: string; confidence?: number }[] = await detectLanguage(inputValue);
 
     if (detectedLanguages.length > 0) {
       const mostLikelyLanguage = detectedLanguages[0].detectedLanguage;
@@ -94,6 +94,32 @@ export default function ChatPage() {
   const handleClearChat = () => {
     setMessages([]);
     setSummarizationStatus('idle');
+  };
+
+  const handleTranslate = async (index: number) => {
+    const message = messages[index];
+    if (!message) return;
+
+    try {
+      setTranslationStatus('translating');
+
+      const translation = await translateText(message.text, targetLanguage);
+
+      const updatedMessages = [...messages];
+      updatedMessages[index].translation = translation;
+      setMessages(updatedMessages);
+
+      setTranslationStatus('success');
+      console.log('Translation successful');
+    } catch (error) {
+      console.error('Translation failed:', error);
+
+      setTranslationStatus('error');
+
+      const updatedMessages = [...messages];
+      updatedMessages[index].translation = 'Translation unavailable';
+      setMessages(updatedMessages);
+    }
   };
 
   return (
@@ -145,21 +171,19 @@ export default function ChatPage() {
                       }`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
-              <p>
-                {message.text.length > 150 && message.detectedLanguage === "English" && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className={styles.summarizeButton}
-                    onClick={() => handleSummarize(index)}
-                  >
-                    Summarize
-                  </Button>
-                )}
-              </p>
+              {message.text.length > 150 && message.detectedLanguage === "English" && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className={styles.summarizeButton}
+                  onClick={() => handleSummarize(index)}
+                >
+                  Summarize
+                </Button>
+              )}
               {message.summary && (
                 <div className={styles.translation}>
-                  <p className={styles.summaryLabel}> Summary: </p>
+                  <p className={styles.summaryLabel}>Summary:</p>
                   <p>{message.summary}</p>
                 </div>
               )}
@@ -180,7 +204,7 @@ export default function ChatPage() {
                 variant="secondary"
                 size="sm"
                 className={styles.translateButton}
-                onClick={() => handleTranslate(index)}
+                onClick={() => {handleTranslate} }
               >
                 Translate
               </Button>

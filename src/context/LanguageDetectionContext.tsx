@@ -3,9 +3,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 interface LanguageDetectionContextType {
   status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
   detector: any;
-  detectLanguage: (text: string) => Promise<{ detectedLanguage: string; confidence: number }[]>;
+  detectLanguage: (text: string) => Promise<{ detectedLanguage: string; }[]>;
   translateText: (text: string, targetLanguage: string) => Promise<string>; // Add translation function
   downloadProgress: number;
+  confidence: number;
+  formatConfidence: (confidence: number) => string;
 }
 
 const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
@@ -14,6 +16,8 @@ const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
   detectLanguage: async () => [],
   translateText: async () => "", 
   downloadProgress: 0,
+  confidence: 0,
+  formatConfidence: (confidence: number) => "",
 });
 
 export function LanguageDetectionProvider({ children }: { children: ReactNode }) {
@@ -60,7 +64,11 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
     initializeDetector();
   }, []);
 
-  const detectLanguage = async (text: string): Promise<{ detectedLanguage: string; confidence: number }[]> => {
+  const formatConfidence = (confidence: number): string => {
+    return `${Math.round(confidence * 100)}%`;
+  };
+
+  const detectLanguage = async (text: string): Promise<{ detectedLanguage: string }[]> => {
     if (!text.trim()) return [];
 
     setStatus("detecting");
@@ -95,8 +103,8 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
 
       // Create a translator
       const translator = await (window as any).ai.translator.create({
-        sourceLanguage: "auto", // Automatically detect source language
-        targetLanguage,
+        sourceLanguage: "auto",
+        targetLanguage: targetLanguage,
       });
 
       // Translate the text
@@ -109,7 +117,7 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
   };
 
   return (
-    <LanguageDetectionContext.Provider value={{ status, detector, detectLanguage, translateText, downloadProgress }}>
+    <LanguageDetectionContext.Provider value={{ formatConfidence, status, detector, detectLanguage, translateText, downloadProgress, confidence: 0 }}>
       {children}
     </LanguageDetectionContext.Provider>
   );
