@@ -215,7 +215,7 @@ export default function ChatPage() {
               >
                 Translate
               </Button>
-              {message.translatedText && (
+              {message.translation && (
                 <div className={styles.translation}>
                   <p className={styles.translationLabel}>Translation:</p>
                   <p>{translationStatus === 'translating' && (
