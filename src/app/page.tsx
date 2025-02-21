@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useSummarizer } from "@/context/SummerizerContext";
 import Image from "next/image";
 import { useLanguageDetection } from "@/context/LanguageDetectionContext";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface Message {
   text: string;
@@ -20,8 +21,7 @@ interface Message {
 }
 
 export default function ChatPage() {
-
-  const {  translateText } = useLanguageDetection(); 
+  const { translateText } = useTranslation();
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -32,27 +32,29 @@ export default function ChatPage() {
   const [summarizationStatus, setSummarizationStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
   const [translationStatus, setTranslationStatus] = useState<'idle' | 'translating' | 'success' | 'error'>('idle');
 
+  const { detectLanguage, formatConfidence } = useLanguageDetection();
+
   const handleSend = async () => {
     if (!inputValue.trim()) return;
-
+  
     // Check if the detector is ready
     if (!isDetectorInitialized) {
       setIsDetectorInitialized(true);
     }
+  
+    // Detect the language of the input text
+    const detectedLanguages = await detectLanguage(inputValue);
+    const detectedLanguage = detectedLanguages.length > 0 ? detectedLanguages[0].detectedLanguage : "Unknown";
+  
     const newMessage: Message = {
       text: inputValue,
-      detectedLanguage: "",
+      detectedLanguage,
+      confidence: detectedLanguages.length > 0 ? detectedLanguages[0].confidence : 0,
     };
-
+  
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
- 
-    await sendMessage(inputValue);
-  };
-
-  const sendMessage = async (message: string) => {
-    // Implement the logic for sending the message here
-    console.log("Message sent:", message);
+  
   };
 
   
@@ -87,31 +89,33 @@ export default function ChatPage() {
     setSummarizationStatus('idle');
   };
 
-  const handleTranslate = async (index: number) => {
+  const handleTranslate = async (index: number, sourceLanguage: string, targetLanguage: string) => {
     const message = messages[index];
-    if (!message) return;
-
+  
     try {
-      setTranslationStatus('translating');
-
-      const translation = await translateText(message.text, targetLanguage);
-
+      setTranslationStatus("translating");
+  
+      // Use the translateText function from the TranslationContext
+      const translatedText = await translateText(message.text, sourceLanguage, targetLanguage);
+  
+      // Update the message with the translated text
       const updatedMessages = [...messages];
-      updatedMessages[index].translation = translation;
+      updatedMessages[index].translation = translatedText;
       setMessages(updatedMessages);
-
-      setTranslationStatus('success');
-      console.log('Translation successful');
+  
+      setTranslationStatus("success");
     } catch (error) {
-      console.error('Translation failed:', error);
-
-      setTranslationStatus('error');
-
+      console.error("Translation failed:", error);
+  
+      // Update the message with an error message
       const updatedMessages = [...messages];
-      updatedMessages[index].translation = 'Translation unavailable';
+      updatedMessages[index].translation = "Translation unavailable";
       setMessages(updatedMessages);
+  
+      setTranslationStatus("error");
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -125,7 +129,7 @@ export default function ChatPage() {
             height={65}
           />
           <div>
-            <h1 className={styles.title}>AI-Powered Text Processor</h1>
+            <h1 className={styles.title}> AI-Powered Text Processor</h1>
             <p className={styles.caveat}>Instant Summarization, Translation and Language detection</p>
           </div>
         </div>
@@ -156,7 +160,7 @@ export default function ChatPage() {
               <div className={styles.message}>
                 <p>{message.text}</p>
                 <p className={styles.detectedLanguage}>
-                   Detected language: "English"</p>
+                Detected language: {message.detectedLanguage} ({message.confidence ? formatConfidence(message.confidence) : "N/A"})</p>
               </div>
               {message.text.length > 150 && message.detectedLanguage === "English" && (
                 <Button
@@ -191,15 +195,24 @@ export default function ChatPage() {
                 variant="secondary"
                 size="sm"
                 className={styles.translateButton}
-                onClick={() => {handleTranslate} }
+                onClick={() => handleTranslate(index, message.detectedLanguage, targetLanguage)}
               >
                 Translate
               </Button>
               {message.translation && (
                 <div className={styles.translation}>
                   <p className={styles.translationLabel}>Translation:</p>
-                  <p>{message.translation}</p>
-                </div>
+                  <p>{translationStatus === 'translating' && (
+                      <div className={styles.statusMessage}>
+                        <p>Translating... Please wait.</p>
+                      </div>
+                    )}
+                    {translationStatus === 'error' && (
+                      <div className={styles.statusError}>
+                        <p>Translation failed. Please try again.</p>
+                      </div>
+                    )}</p>
+                    </div>
               )}
             </div>
           ))}
@@ -214,7 +227,6 @@ export default function ChatPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                disabled={!summarizeText}
                 
               />
               <Button onClick={handleSend} className={styles.sendButton}>

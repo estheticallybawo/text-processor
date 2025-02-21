@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SummarizerProvider } from "@/context/SummerizerContext";
-import { LanguageDetectionProvider } from "@/context/LanguageDetectionContext";
+import { DetectionProvider} from "@/context/LanguageDetectionContext";
 
 export const metadata: Metadata = {
   title: "AI Text Processor",
@@ -16,15 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta
-          name="chromemeta"
-          content={process.env.NEXT_PUBLIC_SUMMARIZER_API_TOKEN}
-          http-equiv="origin-trial"
-        />
+
       </head>
       <body>
         <SummarizerProvider>
-          <LanguageDetectionProvider>{children}</LanguageDetectionProvider>
+          <DetectionProvider>{children}</DetectionProvider>
         </SummarizerProvider>
       </body>
     </html>
