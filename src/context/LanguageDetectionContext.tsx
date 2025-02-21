@@ -1,31 +1,31 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface LanguageDetectionContextType {
-  status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
+ /*status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
   detector: any;
   detectLanguage: (text: string) => Promise<{ detectedLanguage: string; confidence: number }[]>;
   downloadProgress: number;
   confidence: number;
-  formatConfidence: (confidence: number) => string;
+  formatConfidence: (confidence: number) => string;*/
   translateText: (text: string, targetLanguage: string) => Promise<string>;
 }
 
 const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
-  status: "loading",
-  detector: null,
-  detectLanguage: async () => [],
-  downloadProgress: 0,
-  confidence: 0,
-  formatConfidence: (confidence: number) => "",
+  //status: "loading",//
+ // detector: null,//
+  //etectLanguage: async () => [],//
+  //downloadProgress: 0,//
+  //confidence: 0,//
+  //formatConfidence: (confidence: number) => "",//
   translateText: async () => "",
 });
 
 export function LanguageDetectionProvider({ children }: { children: ReactNode }) {
-  const [detector, setDetector] = useState<any>(null);
+  /* const [detector, setDetector] = useState<any>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error">("idle");
   const [downloadProgress, setDownloadProgress] = useState(0);
 
-         /* useEffect(() => {
+          useEffect(() => {
             const initializeDetector = async () => {
               try {
                 // Check if the API is supported
@@ -122,7 +122,7 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
   };
 
   return (
-    <LanguageDetectionContext.Provider value={{ formatConfidence, status, detector, detectLanguage, translateText, downloadProgress, confidence: 0 }}>
+    <LanguageDetectionContext.Provider value={{ translateText,  }}>
       {children}
     </LanguageDetectionContext.Provider>
   );
