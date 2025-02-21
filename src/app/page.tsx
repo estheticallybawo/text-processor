@@ -13,7 +13,7 @@ import { useLanguageDetection } from "@/context/LanguageDetectionContext";
 
 interface Message {
   text: string;
-  //detectedLanguage: string;//
+  detectedLanguage: string;
   confidence?: number;
   translation?: string;
   summary?: string;
@@ -41,7 +41,7 @@ export default function ChatPage() {
     }
     const newMessage: Message = {
       text: inputValue,
-     // detectedLanguage: "",
+      detectedLanguage: "",
     };
 
     setMessages((prev) => [...prev, newMessage]);
