@@ -71,30 +71,30 @@ export default function ChatPage() {
 
   
 
-const handleSummarize = async (index: number) => {
-  if (messages[index].detectedLanguage !== "English" || messages[index].text.length < 150) return;
+  const handleSummarize = async (index: number) => {
+    if (messages[index].detectedLanguage == "English" || messages[index].text.length >= 150) return;
 
-  try {
-    setSummarizationStatus('summarizing');
+    try {
+      setSummarizationStatus('summarizing');
 
-    const summary = await summarizeText(messages[index].text);
+      const summary = await summarizeText(messages[index].text);
 
-    const updatedMessages = [...messages];
-    updatedMessages[index].summary = summary;
-    setMessages(updatedMessages);
+      const updatedMessages = [...messages];
+      updatedMessages[index].summary = summary;
+      setMessages(updatedMessages);
 
-    setSummarizationStatus('success');
-    console.log('Summarization successful');
-  } catch (error) {
-    console.error('Summarization failed:', error);
+      setSummarizationStatus('success');
+      console.log('Summarization successful');
+    } catch (error) {
+      console.error('Summarization failed:', error);
 
-    setSummarizationStatus('error');
+      setSummarizationStatus('error');
 
-    const updatedMessages = [...messages];
-    updatedMessages[index].summary = 'Summary unavailable';
-    setMessages(updatedMessages);
-  }
-};
+      const updatedMessages = [...messages];
+      updatedMessages[index].summary = 'Summary unavailable';
+      setMessages(updatedMessages);
+    }
+  };
 
   const handleClearChat = () => {
     setMessages([]);
@@ -176,7 +176,7 @@ const handleSummarize = async (index: number) => {
                       }`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
-              {message.text.length > 150 && (
+              {message.text.length > 150 && message.detectedLanguage === "English" && (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -209,7 +209,7 @@ const handleSummarize = async (index: number) => {
                 variant="secondary"
                 size="sm"
                 className={styles.translateButton}
-                onClick={() => handleTranslate(index)}
+                onClick={() => {handleTranslate} }
               >
                 Translate
               </Button>
