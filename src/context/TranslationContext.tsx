@@ -37,7 +37,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       
             const newTranslator = await (window as any).ai.translator.create({
               sourceLanguage: "en",
-              targetLanguage: "fr",
+              targetLanguage:  "fr",
               monitor(m: any) {
                 m.addEventListener("downloadprogress", (e: ProgressEvent) => {
                   const progress = (e.loaded / e.total) * 100;

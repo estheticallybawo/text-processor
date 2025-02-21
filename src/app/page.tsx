@@ -19,6 +19,15 @@ interface Message {
   translation?: string;
   summary?: string;
 }
+const languageMap: { [key: string]: string } = {
+  en: "English",
+  pt: "Portuguese",
+  es: "Spanish",
+  ru: "Russian",
+  tr: "Turkish",
+  fr: "French",
+};
+
 
 export default function ChatPage() {
   const { translateText } = useTranslation();
@@ -168,7 +177,7 @@ export default function ChatPage() {
               <div className={styles.message}>
                 <p>{message.text}</p>
                 <p className={styles.detectedLanguage}>
-                Detected language: {message.detectedLanguage} ({message.confidence ? formatConfidence(message.confidence) : "N/A"})</p>
+                I am ({message.confidence ? formatConfidence(message.confidence) : "N/A"}) sure that this is {languageMap[message.detectedLanguage] || "Unknown"}</p>
               </div>
               {message.text.length > 150 && (
                 <Button
@@ -191,12 +200,11 @@ export default function ChatPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent> 
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="pt">Portuguese</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="ru">Russian</SelectItem>
-                  <SelectItem value="tr">Turkish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
+                      {Object.entries(languageMap).map(([code, name]) => (
+            <SelectItem key={code} value={code}>
+              {name}
+            </SelectItem>
+          ))}
                 </SelectContent>
               </Select>
               <Button
