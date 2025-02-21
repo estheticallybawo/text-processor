@@ -60,12 +60,15 @@ export default function ChatPage() {
   
 
   const handleSummarize = async (index: number) => {
-    if (messages[index].detectedLanguage == "en" || messages[index].text.length >= 150) return;
+    if (messages[index].text.length < 150) return;
+    const supportedLanguagesForSummarization = ["en"]; 
+  if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) return;
 
     try {
       setSummarizationStatus('summarizing');
 
       const summary = await summarizeText(messages[index].text);
+      
 
       const updatedMessages = [...messages];
       updatedMessages[index].summary = summary;
@@ -162,7 +165,7 @@ export default function ChatPage() {
                 <p className={styles.detectedLanguage}>
                 Detected language: {message.detectedLanguage} ({message.confidence ? formatConfidence(message.confidence) : "N/A"})</p>
               </div>
-              {message.text.length > 150 && message.detectedLanguage === "en" && (
+              {message.text.length > 150 && (
                 <Button
                   variant="secondary"
                   size="sm"
