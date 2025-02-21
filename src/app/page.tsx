@@ -97,9 +97,12 @@ export default function ChatPage() {
   
     try {
       setTranslationStatus("translating");
-  
+      console.log("Translating text:", message.text); // Debug log
       // Use the translateText function from the TranslationContext
       const translatedText = await translateText(message.text, sourceLanguage, targetLanguage);
+      
+      console.log("Translated text:", translatedText); // Debug log
+
   
       // Update the message with the translated text
       const updatedMessages = [...messages];
