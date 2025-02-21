@@ -19,6 +19,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     const [translator, setTranslator] = useState<any>(null);
     const [status, setStatus] = useState<"loading" | "ready" | "unavailable" | "downloading" | "idle" | "translating" | "success" | "error">("idle");
     const [downloadProgress, setDownloadProgress] = useState(0);
+
   
     useEffect(() => {
         const initializeTranslator = async () => {
@@ -58,6 +59,16 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       
         initializeTranslator();
       }, []);
+
+      useEffect(() => {
+        if (status === 'success' || status === 'error') {
+          const timer = setTimeout(() => {
+            setStatus('idle');
+          }, 3000); // Reset after 3 seconds
+      
+          return () => clearTimeout(timer);
+        }
+      }, [status]);
   
     const checkLanguagePairAvailability = async (sourceLanguage: string, targetLanguage: string): Promise<"readily" | "after-download" | "no"> => {
       try {
