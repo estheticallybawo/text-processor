@@ -145,7 +145,9 @@ export default function ChatPage() {
       </header>
 
       <main className={styles.main}>
+      <div className={styles.messageList}>
       {!isDetectorInitialized && (
+        
           <div className={styles.statusMessage}>
           </div>
         )}
@@ -160,7 +162,7 @@ export default function ChatPage() {
             <p>Summarization failed. Please try again.</p>
           </div>
         )}
-        <div className={styles.messageList}>
+       
           {messages.map((message, index) => (
             <div key={index} className={styles.messageContainer}>
               <div className={styles.message}>
