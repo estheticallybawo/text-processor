@@ -42,6 +42,7 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
 
         // Create detector instance
         const instance = await (window as any).ai.languageDetector.create();
+        console.log("Language detector instance:", instance);
 
         // Handle model download
         if (capabilities.available === "after-download") {
