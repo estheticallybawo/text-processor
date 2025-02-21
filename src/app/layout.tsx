@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SummarizerProvider } from "@/context/SummerizerContext";
 import { DetectionProvider} from "@/context/LanguageDetectionContext";
+import { TranslationProvider } from "@/context/TranslationContext";
 
 export const metadata: Metadata = {
   title: "AI Text Processor",
@@ -19,9 +20,11 @@ export default function RootLayout({
 
       </head>
       <body>
+        <TranslationProvider>
         <SummarizerProvider>
           <DetectionProvider>{children}</DetectionProvider>
         </SummarizerProvider>
+        </TranslationProvider>
       </body>
     </html>
   );
