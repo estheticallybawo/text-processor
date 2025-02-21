@@ -57,22 +57,14 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
                 });
                 await detector.ready;
               }
+              setDetector(detector);
+              setStatus('ready');
+            } catch (error) {
+              console.error('Summarizer initialization failed:', error);
+              setStatus('unavailable');
+            }
 
-      
-
-
-        setDetector(detector);
-        if (typeof detector.detectLanguage !== "function") {
-          throw new Error("Language detector does not have a detectLanguage method.");
-        }
-        setStatus("ready");
-
-      } catch (error) {
-        console.error("Language Detector initialization failed:", error);
-        setStatus("unavailable");
-      }
     };
-
     initializeDetector();
   }, []);
 
