@@ -41,7 +41,7 @@ export default function ChatPage() {
 
     const newMessage: Message = {
       text: inputValue,
-      detectedLanguage: "Detecting...",
+      detectedLanguage: "English",
       confidence: undefined,
     };
 
@@ -59,7 +59,7 @@ export default function ChatPage() {
     const sendMessage = async (text: string) => {
       try {
         const detectionResult = await detectLanguage(text);
-        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "en";
+        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "English";
 
         newMessage.detectedLanguage = detectedLanguageCode;
         newMessage.confidence = detectionResult[0]?.confidence;
@@ -79,7 +79,7 @@ export default function ChatPage() {
 
   const handleSummarize = async (index: number) => {
     const message = messages[index];
-    if (message.detectedLanguage == "en" || message.text.length >= 150) return;
+    if (message.detectedLanguage == "English" || message.text.length >= 150) return;
 
     try {
       setSummarizationStatus('summarizing');
