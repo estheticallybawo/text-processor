@@ -72,7 +72,9 @@ export default function ChatPage() {
   const handleSummarize = async (index: number) => {
     if (messages[index].text.length < 150) return;
     const supportedLanguagesForSummarization = ["English"]; 
-  if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) return;
+  if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) 
+    return 
+            setSummarizationStatus('idle');
 
     try {
       setSummarizationStatus('summarizing');
@@ -95,8 +97,9 @@ export default function ChatPage() {
       updatedMessages[index].summary = 'Summary unavailable';
       setMessages(updatedMessages);
     }
+  
   };
-
+  
   const handleClearChat = () => {
     setMessages([]);
     setSummarizationStatus('idle');
