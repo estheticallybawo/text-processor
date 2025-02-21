@@ -18,8 +18,7 @@ export default function RootLayout({
       <head>
         <meta
           name="chromemeta"
-          content={process.env.NEXT_PUBLIC_SUMMARIZER_API_TOKEN || process.env.NEXT_PUBLIC_TRANSLATOR_API_TOKEN || process.env.NEXT_PUBLIC_LANGUAGE_DETECTOR_API_TOKEN}
-          data-origin="https://text-processor-zeta.vercel.app/"
+          content={process.env.NEXT_PUBLIC_SUMMARIZER_API_TOKEN}
           http-equiv="origin-trial"
         />
       </head>

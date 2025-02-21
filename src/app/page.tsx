@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, } from "react";
+import { useState, useCallback } from "react";
 import styles from "./Chatbox.module.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Send } from "lucide-react";
 import Link from "next/link";
 import { useSummarizer } from "@/context/SummerizerContext";
 import Image from "next/image";
-import { languageMap } from "@/utils/languageMap"; 
+import { languages } from "@/utils/languageMap"; 
 import { formatConfidence } from "@/utils/formatConfidence"; 
 import { useLanguageDetection } from "@/context/LanguageDetectionContext";
 
@@ -67,18 +67,11 @@ export default function TranslatorPage() {
     setMessages((prev) => [...prev.slice(0, -1), newMessage]);
   };
 
-  const handleTranslate = async (index: number) => {
-  const message = messages[index];
-  const translatedText = await translateText(message.text, targetLanguage);
-
-  const updatedMessages = [...messages];
-  updatedMessages[index].translation = translatedText;
-  setMessages(updatedMessages);
-};
+  
 
   const handleSummarize = async (index: number) => {
     const message = messages[index];
-    if (message.detectedLanguage !== "English" || message.text.length <= 150) return;
+    if (message.detectedLanguage !== "en" || message.text.length <= 150) return;
 
     try {
       setSummarizationStatus('summarizing');
@@ -151,7 +144,7 @@ export default function TranslatorPage() {
                 <p>{message.text}</p>
                  <p className={styles.detectedLanguage}> {message.confidence !== undefined
             ? `I'm ${formatConfidence(message.confidence)}
-            sure this is ${languageMap[message.detectedLanguage] || message.detectedLanguage}`
+            sure this is ${languages[message.detectedLanguage] || message.detectedLanguage}`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
               <p>
@@ -176,7 +169,7 @@ export default function TranslatorPage() {
                 <SelectTrigger className={styles.languageSelect}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent> 
                   <SelectItem value="en">English</SelectItem>
                   <SelectItem value="pt">Portuguese</SelectItem>
                   <SelectItem value="es">Spanish</SelectItem>
@@ -234,8 +227,4 @@ export default function TranslatorPage() {
       </main>
     </div>
   );
-}
-
-async function translateText(text: string, targetLang: string): Promise<string> {
-  return `Translated to ${targetLang}: ${text}`; // Mock translation (Replace with real API call)
 }

@@ -1,8 +1,7 @@
 // hooks/useLanguageDetection.ts
 "use client";
-import { formatConfidence } from "@/utils/formatConfidence";
-import { useState, useEffect, useRef } from "react"; 
 
+import { useState } from "react";
 
 declare global {
   interface Window {
@@ -11,15 +10,11 @@ declare global {
         capabilities: () => Promise<{ capabilities: string }>;
         create: (options?: any) => Promise<any>;
       };
-      translator: {
-        create: (options: { sourceLanguage: string; targetLanguage: string }) => Promise<{
-          translate: (text: string) => Promise<string>;
-        }>;
-
-    };
+    }
   }
 }
-}
+
+
 
 export function useLanguageDetection() {
   const [detectedLanguage, setDetectedLanguage] = useState<string>("");
@@ -28,10 +23,7 @@ export function useLanguageDetection() {
   const isBrowser = typeof window !== "undefined";
 
   const isLanguageDetectorSupported =
-    isBrowser && "ai" in window && "languageDetector" in window.ai;
-
-  // Use a ref to store the event listener
-  const monitorCallbackRef = useRef<(() => void) | null>(null); // Initialize with null
+    isBrowser && "ai" in window && "languageDetector" in (window.ai as any);
 
   const initializeDetector = async () => {
     try {
@@ -41,7 +33,7 @@ export function useLanguageDetection() {
       }
 
       // Check capabilities
-      const languageDetectorCapabilities = await window.ai.languageDetector.capabilities();
+      const languageDetectorCapabilities = await (window.ai as any).languageDetector.capabilities();
       const canDetect = languageDetectorCapabilities.capabilities;
 
       if (canDetect === "no") {
@@ -50,24 +42,16 @@ export function useLanguageDetection() {
 
       let detectorInstance;
       if (canDetect === "readily") {
-        
-        
+        // The language detector can immediately be used
+        detectorInstance = await window.ai.languageDetector.create();
+      } else {
         // The language detector requires a model download
-        const monitorCallback = (m: any) => {
-          const progressHandler = (e: any) => {
-            console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
-          };
-
-          m.addEventListener("downloadprogress", progressHandler);
-
-          // Store the event listener in the ref for cleanup
-          monitorCallbackRef.current = () => {
-            m.removeEventListener("downloadprogress", progressHandler);
-          };
-        };
-
         detectorInstance = await window.ai.languageDetector.create({
-          monitor: monitorCallback,
+          monitor(m: any) {
+            m.addEventListener("downloadprogress", (e: any) => {
+              console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
+            });
+          },
         });
         await detectorInstance.ready;
       }
@@ -79,17 +63,8 @@ export function useLanguageDetection() {
     }
   };
 
-  // Cleanup event listeners when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (monitorCallbackRef.current) {
-        monitorCallbackRef.current(); // Cleanup the event listener
-      }
-    };
-  }, []);
-
-  const detectLanguage = async (text: string): Promise<{ detectedLanguage: string; confidence: number }[]> => {
-    if (!text.trim()) return [];
+  const detectLanguage = async (text: string) => {
+    if (!text.trim()) return;
 
     setStatus("detecting");
 
@@ -100,16 +75,16 @@ export function useLanguageDetection() {
 
       const detectedLanguages = await detector.detectLanguage(text);
       if (detectedLanguages.length > 0) {
+        setDetectedLanguage(detectedLanguages[0].language);
         setStatus("success");
-        return detectedLanguages;
       } else {
+        setDetectedLanguage("Unknown");
         setStatus("error");
-        return [];
       }
     } catch (error) {
       console.error("Language detection failed:", error);
+      setDetectedLanguage("Unknown");
       setStatus("error");
-      return [];
     }
   };
 
