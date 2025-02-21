@@ -218,7 +218,7 @@ export default function ChatPage() {
               {message.translation && (
                 <div className={styles.translation}>
                   <p className={styles.translationLabel}>Translation:</p>
-                  <p>{translationStatus === 'translating' && (
+                    {translationStatus === 'translating' && (
                       <div className={styles.statusMessage}>
                         <p>Translating... Please wait.</p>
                       </div>
@@ -231,7 +231,6 @@ export default function ChatPage() {
                     
                     {languageMap[targetLanguage]}: {message.translation}
                 
-                  </p>
                     </div>
               )}
             </div>
