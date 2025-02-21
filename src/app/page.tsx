@@ -18,6 +18,7 @@ interface Message {
   confidence?: number;
   translation?: string;
   summary?: string;
+  translatedText?: string;
 }
 const languageMap: { [key: string]: string } = {
   en: "English",
@@ -214,7 +215,7 @@ export default function ChatPage() {
               >
                 Translate
               </Button>
-              {message.translation && (
+              {message.translatedText && (
                 <div className={styles.translation}>
                   <p className={styles.translationLabel}>Translation:</p>
                   <p>{translationStatus === 'translating' && (
@@ -228,6 +229,7 @@ export default function ChatPage() {
                       </div>
                     )}
                     <p className={styles.targetLanguage}>
+                    {languageMap[targetLanguage]}: {message.translatedText}
                     </p>
                   </p>
                     </div>
