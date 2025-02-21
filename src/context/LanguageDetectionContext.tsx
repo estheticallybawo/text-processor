@@ -34,32 +34,39 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
         if (!("languageDetector" in (window as any).ai)) throw new Error("Language Detection API not supported");
 
         // Check capabilities
-        const capabilities = await (window as any).ai.languageDetector.capabilities();
-        if (capabilities.available === "no") {
-          setStatus("unavailable");
-          return;
-        }
+        const languageDetectorCapabilities = await self.ai.languageDetector.capabilities();
+              const canDetect = languageDetectorCapabilities.capabilities;
+              let detector;
+              if (canDetect === 'no') {
+                // The language detector isn't usable.
+                return;
+              }
+              if (canDetect === 'readily') {
+                // The language detector can immediately be used.
+                detector = await self.ai.languageDetector.create();
+                console.log("Language detector instance:", detector);
+                
+              } else {
+                // The language detector can be used after model download.
+                detector = await self.ai.languageDetector.create({
+                  monitor(m: any) {
+                    m.addEventListener('downloadprogress', (e: ProgressEvent) => {
+                      console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
+                    });
+                  },
+                });
+                await detector.ready;
+              }
 
-        // Create detector instance
-        const instance = await (window as any).ai.languageDetector.create();
-        console.log("Language detector instance:", instance);
+      
 
-        // Handle model download
-        if (capabilities.available === "after-download") {
-          setStatus("downloading");
-          instance.addEventListener("downloadprogress", (event: any) => {
-            const progress = (event.loaded / event.total) * 100;
-            setDownloadProgress(progress); // Update progress
-            console.log(`Downloaded ${event.loaded} of ${event.total} bytes (${progress.toFixed(2)}%)`);
-          });
-          await instance.ready;
-        }
 
-        setDetector(instance);
-        if (typeof instance.detectLanguage !== "function") {
+        setDetector(detector);
+        if (typeof detector.detectLanguage !== "function") {
           throw new Error("Language detector does not have a detectLanguage method.");
         }
         setStatus("ready");
+
       } catch (error) {
         console.error("Language Detector initialization failed:", error);
         setStatus("unavailable");
@@ -100,6 +107,8 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
       return [];
     }
   };
+
+  //ranslate text to target language
 
   const translateText = async (text: string, targetLanguage: string): Promise<string> => {
     if (!text.trim()) return "";
