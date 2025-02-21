@@ -5,8 +5,8 @@ import { DetectionProvider} from "@/context/LanguageDetectionContext";
 import { TranslationProvider } from "@/context/TranslationContext";
 
 export const metadata: Metadata = {
-  title: "AI Text Processor",
-  description: "Built by Esther B",
+  title: "Texilly",
+  description: "AI Text Processor is a simple web application that demonstrates the use of AI-powered text processing capabilities.",
 };
 
 export default function RootLayout({
