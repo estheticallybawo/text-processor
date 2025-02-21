@@ -41,10 +41,7 @@ export function useLanguageDetection() {
       }
 
       let detectorInstance;
-      if (canDetect === "readily") {
-        // The language detector can immediately be used
-        detectorInstance = await window.ai.languageDetector.create();
-      } else {
+      if (canDetect !== "readily") {
         // The language detector requires a model download
         detectorInstance = await window.ai.languageDetector.create({
           monitor(m: any) {
