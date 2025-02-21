@@ -229,7 +229,7 @@ export default function ChatPage() {
                       </div>
                     )}
                     <p className={styles.targetLanguage}>
-                    {languageMap[targetLanguage]}: {message.translatedText}
+                    {languageMap[targetLanguage]}: {message.translation}
                     </p>
                   </p>
                     </div>
