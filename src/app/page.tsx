@@ -217,7 +217,9 @@ export default function ChatPage() {
                       <div className={styles.statusError}>
                         <p>Translation failed. Please try again.</p>
                       </div>
-                    )}</p>
+                    )}
+                    {message.translation}
+                  </p>
                     </div>
               )}
             </div>
