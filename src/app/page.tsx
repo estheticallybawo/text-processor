@@ -32,16 +32,12 @@ export default function TranslatorPage() {
     summarizeText: (text: string) => Promise<string>;
   };
   const [summarizationStatus, setSummarizationStatus] = useState<'idle' | 'summarizing' | 'success' | 'error'>('idle');
-
+  const [translationStatus, setTranslationStatus] = useState<'idle' | 'translating' | 'success' | 'error'>('idle');
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
 
     // Check if the detector is ready
-    if (status !== "ready") {
-      console.error("Language detector is not ready.");
-      return;
-    }
 
     const newMessage: Message = {
       text: inputValue,
@@ -142,9 +138,11 @@ export default function TranslatorPage() {
             <div key={index} className={styles.messageContainer}>
               <div className={styles.message}>
                 <p>{message.text}</p>
-                 <p className={styles.detectedLanguage}> {message.confidence !== undefined
-            ? `I'm ${formatConfidence(message.confidence)}
-            sure this is ${languages[message.detectedLanguage] || message.detectedLanguage}`
+                <p className={styles.detectedLanguage}>
+                  {message.confidence !== undefined
+                    ? `I'm ${formatConfidence(message.confidence)} sure this is ${
+                        languages.find(lang => lang.code === message.detectedLanguage)?.name || message.detectedLanguage
+                      }`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
               <p>
