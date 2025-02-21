@@ -229,7 +229,7 @@ export default function ChatPage() {
                       </div>
                     )}
                     <p className={styles.targetLanguage}>
-                         {languageMap[targetLanguage] || "Unknown"}
+                         {message.text}
                     </p>
                   </p>
                     </div>
