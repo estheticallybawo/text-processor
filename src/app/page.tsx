@@ -71,9 +71,10 @@ export default function ChatPage() {
 
   const handleSummarize = async (index: number) => {
     if (messages[index].text.length < 150) return;
-    const supportedLanguagesForSummarization = [languageMap.en]; 
-  if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) 
-    return;
+    const supportedLanguagesForSummarization = ["en"]; 
+  if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage))return;
+
+
     try {
       setSummarizationStatus('summarizing');
 
