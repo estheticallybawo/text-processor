@@ -73,8 +73,8 @@ export default function ChatPage() {
     if (messages[index].text.length > 150) {
     const supportedLanguagesForSummarization = ["en"]; 
   if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) 
-    return alert("Sorry, summarization is only available for English text.");}
-          
+    return alert("Sorry, summarization is only available for English text.");
+  
 
     try {
       setSummarizationStatus('summarizing');
@@ -97,7 +97,9 @@ export default function ChatPage() {
       updatedMessages[index].summary = 'Summary unavailable';
       setMessages(updatedMessages);
     }
-  
+    } else {
+      alert("Text is too short for summarization.");
+    }
   };
   
   const handleClearChat = () => {
