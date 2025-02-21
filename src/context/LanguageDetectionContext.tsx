@@ -2,25 +2,42 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 
 interface LanguageDetectionContextType {
+<<<<<<< HEAD
  status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
+=======
+ /*status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
+>>>>>>> 89ba6afbe1ef90ffcfe4d68f7c7cb14247f7be13
   detector: any;
   detectLanguage: (text: string) => Promise<{ detectedLanguage: string; confidence: number }[]>;
   downloadProgress: number;
   confidence: number;
+<<<<<<< HEAD
+=======
+  formatConfidence: (confidence: number) => string;*/
+>>>>>>> 89ba6afbe1ef90ffcfe4d68f7c7cb14247f7be13
   translateText: (text: string, targetLanguage: string) => Promise<string>;
 }
 
 const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
+<<<<<<< HEAD
 status: "loading",
  detector: null,
  detectLanguage: async () => [],
  downloadProgress: 0,
   confidence: 0,
+=======
+  //status: "loading",//
+ // detector: null,//
+  //etectLanguage: async () => [],//
+  //downloadProgress: 0,//
+  //confidence: 0,//
+  //formatConfidence: (confidence: number) => "",//
+>>>>>>> 89ba6afbe1ef90ffcfe4d68f7c7cb14247f7be13
   translateText: async () => "",
 });
 
 export function LanguageDetectionProvider({ children }: { children: ReactNode }) {
-  const [detector, setDetector] = useState<any>(null);
+  /* const [detector, setDetector] = useState<any>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error">("idle");
   const [downloadProgress, setDownloadProgress] = useState(0);
 
@@ -121,7 +138,11 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
   };
 
   return (
+<<<<<<< HEAD
     <LanguageDetectionContext.Provider value={{ status, detector, detectLanguage, downloadProgress, translateText, confidence: 0  }}>
+=======
+    <LanguageDetectionContext.Provider value={{ translateText,  }}>
+>>>>>>> 89ba6afbe1ef90ffcfe4d68f7c7cb14247f7be13
       {children}
     </LanguageDetectionContext.Provider>
   );

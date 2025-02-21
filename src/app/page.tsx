@@ -9,13 +9,11 @@ import { Send } from "lucide-react";
 import Link from "next/link";
 import { useSummarizer } from "@/context/SummerizerContext";
 import Image from "next/image";
-import { languages } from "@/utils/languageMap"; 
-import { formatConfidence } from "@/utils/formatConfidence"; 
 import { useLanguageDetection } from "@/context/LanguageDetectionContext";
 
 interface Message {
   text: string;
-  detectedLanguage: string;
+  //detectedLanguage: string;//
   confidence?: number;
   translation?: string;
   summary?: string;
@@ -23,7 +21,7 @@ interface Message {
 
 export default function ChatPage() {
 
-  const { detectLanguage, translateText } = useLanguageDetection(); 
+  const {  translateText } = useLanguageDetection(); 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -37,36 +35,24 @@ export default function ChatPage() {
   const handleSend = async () => {
     if (!inputValue.trim()) return;
 
-
     // Check if the detector is ready
     if (!isDetectorInitialized) {
       setIsDetectorInitialized(true);
     }
     const newMessage: Message = {
       text: inputValue,
-      detectedLanguage: "",
+     // detectedLanguage: "",
     };
 
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
  
-    const sendMessage = async (text: string) => {
-      try {
-        const detectionResult = await detectLanguage(text);
-        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "Englis";
-
-        newMessage.detectedLanguage = detectedLanguageCode;
-        newMessage.confidence = detectionResult[0]?.confidence;
-
-        setMessages((prev) => [...prev.slice(0, -1), newMessage]);
-      } catch (error) {
-        console.error('Language detection failed:', error);
-        newMessage.detectedLanguage = "Unknown";
-        setMessages((prev) => [...prev.slice(0, -1), newMessage]);
-      }
-    };
-
     await sendMessage(inputValue);
+  };
+
+  const sendMessage = async (message: string) => {
+    // Implement the logic for sending the message here
+    console.log("Message sent:", message);
   };
 
   
@@ -170,11 +156,7 @@ export default function ChatPage() {
               <div className={styles.message}>
                 <p>{message.text}</p>
                 <p className={styles.detectedLanguage}>
-                  {message.confidence !== undefined
-                    ? `I'm ${formatConfidence(message.confidence)} sure this is ${
-                        languages.find(lang => lang.code === message.detectedLanguage)?.name || message.detectedLanguage
-                      }`
-            : `Detected language: ${message.detectedLanguage}`}</p>
+                   Detected language: "English"</p>
               </div>
               {message.text.length > 150 && message.detectedLanguage === "English" && (
                 <Button
