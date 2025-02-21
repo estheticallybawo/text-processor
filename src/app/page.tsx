@@ -21,7 +21,7 @@ interface Message {
   summary?: string;
 }
 
-export default function TranslatorPage() {
+export default function ChatPage() {
 
   const { status, detectLanguage, translateText } = useLanguageDetection(); 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
@@ -203,7 +203,7 @@ export default function TranslatorPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                disabled={!isDetectorInitialized && !summarizeText}
+                disabled={!summarizeText}
                 
               />
               <Button onClick={handleSend} className={styles.sendButton}>
