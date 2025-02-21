@@ -228,7 +228,9 @@ export default function ChatPage() {
                         <p>Translation failed. Please try again.</p>
                       </div>
                     )}
-                    {message.translation}
+                    <p className={styles.targetLanguage}>
+                         {languageMap[targetLanguage] || "Unknown"}
+                    </p>
                   </p>
                     </div>
               )}
