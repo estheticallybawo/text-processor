@@ -23,9 +23,8 @@ interface Message {
 
 export default function TranslatorPage() {
 
- 
+  const { status, detectLanguage, translateText } = useLanguageDetection(); 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
-  const { status, detectLanguage } = useLanguageDetection(); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [targetLanguage, setTargetLanguage] = useState("en");
@@ -69,13 +68,13 @@ export default function TranslatorPage() {
   };
 
   const handleTranslate = async (index: number) => {
-    const message = messages[index];
-    const translatedText = await translateText(message.text, targetLanguage);
+  const message = messages[index];
+  const translatedText = await translateText(message.text, targetLanguage);
 
-    const updatedMessages = [...messages];
-    updatedMessages[index].translation = translatedText;
-    setMessages(updatedMessages);
-  };
+  const updatedMessages = [...messages];
+  updatedMessages[index].translation = translatedText;
+  setMessages(updatedMessages);
+};
 
   const handleSummarize = async (index: number) => {
     const message = messages[index];

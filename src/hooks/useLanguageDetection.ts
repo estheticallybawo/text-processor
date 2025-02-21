@@ -1,6 +1,6 @@
 // hooks/useLanguageDetection.ts
 "use client";
-
+import { formatConfidence } from "@/utils/formatConfidence";
 import { useState, useEffect, useRef } from "react"; 
 
 
@@ -11,8 +11,14 @@ declare global {
         capabilities: () => Promise<{ capabilities: string }>;
         create: (options?: any) => Promise<any>;
       };
+      translator: {
+        create: (options: { sourceLanguage: string; targetLanguage: string }) => Promise<{
+          translate: (text: string) => Promise<string>;
+        }>;
+
     };
   }
+}
 }
 
 export function useLanguageDetection() {

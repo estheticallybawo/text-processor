@@ -1,11 +1,10 @@
-"use client";
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface LanguageDetectionContextType {
   status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
   detector: any;
   detectLanguage: (text: string) => Promise<{ detectedLanguage: string; confidence: number }[]>;
+  translateText: (text: string, targetLanguage: string) => Promise<string>; // Add translation function
   downloadProgress: number;
 }
 
@@ -13,6 +12,7 @@ const LanguageDetectionContext = createContext<LanguageDetectionContextType>({
   status: "loading",
   detector: null,
   detectLanguage: async () => [],
+  translateText: async () => "", 
   downloadProgress: 0,
 });
 
@@ -60,23 +60,56 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
     initializeDetector();
   }, []);
 
-  useEffect(() => {
-    if (status === "success" || status === "error") {
-      const timer = setTimeout(() => {
-        setStatus("idle");
-      }, 3000); // Reset after 3 seconds
-
-      return () => clearTimeout(timer);
-    }
-  }, [status]);
-
   const detectLanguage = async (text: string): Promise<{ detectedLanguage: string; confidence: number }[]> => {
-    if (!detector || status !== "ready") throw new Error("Language Detector not ready");
-    return await detector.detectLanguage(text);
+    if (!text.trim()) return [];
+
+    setStatus("detecting");
+
+    try {
+      if (!detector) {
+        throw new Error("Language detector is not initialized.");
+      }
+
+      const detectedLanguages = await detector.detectLanguage(text);
+      if (detectedLanguages.length > 0) {
+        setStatus("success");
+        return detectedLanguages;
+      } else {
+        setStatus("error");
+        return [];
+      }
+    } catch (error) {
+      console.error("Language detection failed:", error);
+      setStatus("error");
+      return [];
+    }
+  };
+
+  const translateText = async (text: string, targetLanguage: string): Promise<string> => {
+    if (!text.trim()) return "";
+
+    try {
+      // Check if the API is supported
+      if (!("ai" in window)) throw new Error("AI API not supported");
+      if (!("translator" in (window as any).ai)) throw new Error("Translator API not supported");
+
+      // Create a translator
+      const translator = await (window as any).ai.translator.create({
+        sourceLanguage: "auto", // Automatically detect source language
+        targetLanguage,
+      });
+
+      // Translate the text
+      const translatedText = await translator.translate(text.trim());
+      return translatedText;
+    } catch (error) {
+      console.error("Translation failed:", error);
+      return "Translation unavailable";
+    }
   };
 
   return (
-    <LanguageDetectionContext.Provider value={{ status, detector, detectLanguage, downloadProgress }}>
+    <LanguageDetectionContext.Provider value={{ status, detector, detectLanguage, translateText, downloadProgress }}>
       {children}
     </LanguageDetectionContext.Provider>
   );
