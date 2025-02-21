@@ -115,7 +115,7 @@ export default function ChatPage() {
   
       // Update the message with the translated text
       const updatedMessages = [...messages];
-      updatedMessages[index].translation = translatedText;
+      updatedMessages[index].translation 
       setMessages(updatedMessages);
   
       setTranslationStatus("success");
@@ -201,8 +201,7 @@ export default function ChatPage() {
                 </SelectTrigger>
                 <SelectContent> 
                       {Object.entries(languageMap).map(([code, name]) => (
-            <SelectItem key={code} value={code}>
-              {name}
+            <SelectItem key={code} value={code}> {name}
             </SelectItem>
           ))}
                 </SelectContent>
@@ -229,7 +228,6 @@ export default function ChatPage() {
                       </div>
                     )}
                     <p className={styles.targetLanguage}>
-                         {message.translation}
                     </p>
                   </p>
                     </div>
