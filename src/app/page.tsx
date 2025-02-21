@@ -115,7 +115,7 @@ export default function ChatPage() {
   
       // Update the message with the translated text
       const updatedMessages = [...messages];
-      updatedMessages[index].translation 
+      updatedMessages[index].translation = translatedText
       setMessages(updatedMessages);
   
       setTranslationStatus("success");
