@@ -71,7 +71,7 @@ export default function ChatPage() {
 
   const handleSummarize = async (index: number) => {
     if (messages[index].text.length < 150) return;
-    const supportedLanguagesForSummarization = ["English"]; 
+    const supportedLanguagesForSummarization = ["en"]; 
   if (!supportedLanguagesForSummarization.includes(messages[index].detectedLanguage)) 
     return 
             setSummarizationStatus('idle');
@@ -183,7 +183,7 @@ export default function ChatPage() {
                 <p className={styles.detectedLanguage}>
                 I am ({message.confidence ? formatConfidence(message.confidence) : "N/A"}) sure that this is {languageMap[message.detectedLanguage] || "Unknown"}</p>
               </div>
-              {message.text.length > 150 && (
+              {message.text.length > 150 &&  (
                 <Button
                   variant="secondary"
                   size="sm"
