@@ -37,29 +37,23 @@ export default function ChatPage() {
   const handleSend = async () => {
     if (!inputValue.trim()) return;
 
-    // Check if the detector is ready
 
+    // Check if the detector is ready
+    if (!isDetectorInitialized) {
+      setIsDetectorInitialized(true);
+    }
     const newMessage: Message = {
       text: inputValue,
-      detectedLanguage: "English",
-      confidence: undefined,
+      detectedLanguage: "",
     };
 
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
-    const languageMap: { [key: string]: string } = {
-      en: "English",
-      es: "Spanish",
-      fr: "French",
-      pt: "Portuguese",
-      ru: "Russian",
-      tr: "Turkish",
-    };
-  
+ 
     const sendMessage = async (text: string) => {
       try {
         const detectionResult = await detectLanguage(text);
-        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "English";
+        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "Englis";
 
         newMessage.detectedLanguage = detectedLanguageCode;
         newMessage.confidence = detectionResult[0]?.confidence;
@@ -78,13 +72,12 @@ export default function ChatPage() {
   
 
   const handleSummarize = async (index: number) => {
-    const message = messages[index];
-    if (message.detectedLanguage == "English" || message.text.length >= 150) return;
+    if (messages[index].detectedLanguage == "English" || messages[index].text.length >= 150) return;
 
     try {
       setSummarizationStatus('summarizing');
 
-      const summary = await summarizeText(message.text);
+      const summary = await summarizeText(messages[index].text);
 
       const updatedMessages = [...messages];
       updatedMessages[index].summary = summary;
@@ -183,7 +176,7 @@ export default function ChatPage() {
                       }`
             : `Detected language: ${message.detectedLanguage}`}</p>
               </div>
-              {message.text.length > 150 && message.detectedLanguage === "English" && (
+              {message.text.length > 150 && (
                 <Button
                   variant="secondary"
                   size="sm"
