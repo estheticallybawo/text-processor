@@ -3,7 +3,6 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 interface TranslationContextType {
   status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "translating" | "success" | "error";
-  translator: any;
   translateText: (text: string, sourceLanguage: string, targetLanguage: string) => Promise<string>;
   downloadProgress: number;
   checkLanguagePairAvailability: (sourceLanguage: string, targetLanguage: string) => Promise<"readily" | "after-download" | "no">;
@@ -11,7 +10,6 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType>({
   status: "loading",
-  translator: null,
   translateText: async () => "",
   downloadProgress: 0,
   checkLanguagePairAvailability: async () => "no",
@@ -23,21 +21,43 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     const [downloadProgress, setDownloadProgress] = useState(0);
   
     useEffect(() => {
-      const initializeTranslator = async () => {
-        try {
-          // Check if the API is supported
-          if (!("ai" in window)) throw new Error("AI API not supported");
-          if (!("translator" in (window as any).ai)) throw new Error("Translator API not supported");
-  
-          setStatus("ready");
-        } catch (error) {
-          console.error("Translator initialization failed:", error);
-          setStatus("unavailable");
-        }
-      };
-  
-      initializeTranslator();
-    }, []);
+        const initializeTranslator = async () => {
+          try {
+            // Check if the API is supported
+            if (!("ai" in window)) throw new Error("AI API not supported");
+            if (!("translator" in (window as any).ai)) throw new Error("Translator API not supported");
+      
+            // Initialize the translator for a default language pair (e.g., English to French)
+            const availability = await checkLanguagePairAvailability("en", "fr");
+            if (availability === "no") {
+              throw new Error("Default language pair (en -> fr) is not available.");
+            }
+      
+            setStatus("downloading");
+      
+            const newTranslator = await (window as any).ai.translator.create({
+              sourceLanguage: "en",
+              targetLanguage: "fr",
+              monitor(m: any) {
+                m.addEventListener("downloadprogress", (e: ProgressEvent) => {
+                  const progress = (e.loaded / e.total) * 100;
+                  setDownloadProgress(progress);
+                  console.log(`Downloaded ${e.loaded} of ${e.total} bytes (${progress.toFixed(2)}%)`);
+                });
+              },
+            });
+      
+            await newTranslator.ready;
+            setTranslator(newTranslator);
+            setStatus("ready");
+          } catch (error) {
+            console.error("Translator initialization failed:", error);
+            setStatus("unavailable");
+          }
+        };
+      
+        initializeTranslator();
+      }, []);
   
     const checkLanguagePairAvailability = async (sourceLanguage: string, targetLanguage: string): Promise<"readily" | "after-download" | "no"> => {
       try {
@@ -82,6 +102,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
         }
   
         const translatedText = await translator.translate(text.trim());
+
         setStatus("success");
         return translatedText;
       } catch (error) {
@@ -92,7 +113,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     };
   
     return (
-      <TranslationContext.Provider value={{ status, translator, translateText, downloadProgress, checkLanguagePairAvailability }}>
+      <TranslationContext.Provider value={{ status, translateText, downloadProgress, checkLanguagePairAvailability }}>
         {children}
       </TranslationContext.Provider>
     );

@@ -20,11 +20,11 @@ export default function RootLayout({
 
       </head>
       <body>
-        <TranslationProvider>
+        
         <SummarizerProvider>
-          <DetectionProvider>{children}</DetectionProvider>
+        <DetectionProvider><TranslationProvider>{children}</TranslationProvider></DetectionProvider>
         </SummarizerProvider>
-        </TranslationProvider>
+        
       </body>
     </html>
   );
