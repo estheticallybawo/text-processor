@@ -205,10 +205,9 @@ export default function ChatPage() {
                 <SelectTrigger className={styles.languageSelect}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent> 
+                <SelectContent> Choose a language: 
                       {Object.entries(languageMap).map(([code, name]) => (
-            <SelectItem key={code} value={code}> {name}
-            </SelectItem>
+            <SelectItem key={code} value={code}> {name} </SelectItem>
           ))}
                 </SelectContent>
               </Select>
