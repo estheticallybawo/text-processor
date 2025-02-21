@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 interface LanguageDetectionContextType {
   status: "loading" | "ready" | "unavailable" | "downloading" | "idle" | "detecting" | "success" | "error";
   detector: any;
-  detectLanguage: (text: string) => Promise<{ detectedLanguage: string; }[]>;
+  detectLanguage: (text: string) => Promise<{ detectedLanguage: string;  confidence: number}[]>;
   translateText: (text: string, targetLanguage: string) => Promise<string>; // Add translation function
   downloadProgress: number;
   confidence: number;
@@ -54,6 +54,9 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
         }
 
         setDetector(instance);
+        if (typeof instance.detectLanguage !== "function") {
+          throw new Error("Language detector does not have a detectLanguage method.");
+        }
         setStatus("ready");
       } catch (error) {
         console.error("Language Detector initialization failed:", error);
@@ -68,7 +71,7 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
     return `${Math.round(confidence * 100)}%`;
   };
 
-  const detectLanguage = async (text: string): Promise<{ detectedLanguage: string }[]> => {
+  const detectLanguage = async (text: string): Promise<{ detectedLanguage: string; confidence: number }[]> => {
     if (!text.trim()) return [];
 
     setStatus("detecting");
@@ -81,7 +84,10 @@ export function LanguageDetectionProvider({ children }: { children: ReactNode })
       const detectedLanguages = await detector.detectLanguage(text);
       if (detectedLanguages.length > 0) {
         setStatus("success");
-        return detectedLanguages;
+        return detectedLanguages.map((lang: any) => ({
+          detectedLanguage: lang.language,
+          confidence: lang.confidence,
+        }));
       } else {
         setStatus("error");
         return [];

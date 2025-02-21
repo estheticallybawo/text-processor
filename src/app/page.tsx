@@ -23,7 +23,7 @@ interface Message {
 
 export default function ChatPage() {
 
-  const { status, detectLanguage, translateText } = useLanguageDetection(); 
+  const { detectLanguage, translateText } = useLanguageDetection(); 
   const [isDetectorInitialized, setIsDetectorInitialized] = useState(false); 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -42,32 +42,44 @@ export default function ChatPage() {
     const newMessage: Message = {
       text: inputValue,
       detectedLanguage: "Detecting...",
+      confidence: undefined,
     };
 
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
+    const languageMap: { [key: string]: string } = {
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      pt: "Portuguese",
+      ru: "Russian",
+      tr: "Turkish",
+    };
+  
+    const sendMessage = async (text: string) => {
+      try {
+        const detectionResult = await detectLanguage(text);
+        const detectedLanguageCode = detectionResult[0]?.detectedLanguage || "en";
 
-    // Detect Language
-    const detectedLanguages: { detectedLanguage: string; confidence?: number }[] = await detectLanguage(inputValue);
+        newMessage.detectedLanguage = detectedLanguageCode;
+        newMessage.confidence = detectionResult[0]?.confidence;
 
-    if (detectedLanguages.length > 0) {
-      const mostLikelyLanguage = detectedLanguages[0].detectedLanguage;
-      const confidence = detectedLanguages[0].confidence;
+        setMessages((prev) => [...prev.slice(0, -1), newMessage]);
+      } catch (error) {
+        console.error('Language detection failed:', error);
+        newMessage.detectedLanguage = "Unknown";
+        setMessages((prev) => [...prev.slice(0, -1), newMessage]);
+      }
+    };
 
-      newMessage.detectedLanguage = mostLikelyLanguage;
-      newMessage.confidence = confidence; // Add confidence to the message
-    } else {
-      newMessage.detectedLanguage = "Unknown";
-    }
-
-    setMessages((prev) => [...prev.slice(0, -1), newMessage]);
+    await sendMessage(inputValue);
   };
 
   
 
   const handleSummarize = async (index: number) => {
     const message = messages[index];
-    if (message.detectedLanguage !== "en" || message.text.length <= 150) return;
+    if (message.detectedLanguage == "en" || message.text.length >= 150) return;
 
     try {
       setSummarizationStatus('summarizing');
